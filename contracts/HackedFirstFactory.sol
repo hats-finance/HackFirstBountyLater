@@ -10,7 +10,7 @@ contract HackedFirstFactory {
     address public immutable governance;
     address public immutable implementation;
 
-    event NewHackedFirstContract(address indexed _instance);
+    event NewHackedFirstContract(address indexed _instance, address indexed _hacker, address indexed _committee, address _beneficiary);
 
     constructor(address _implementation, address _governance) {
         implementation = _implementation;
@@ -23,6 +23,6 @@ contract HackedFirstFactory {
         address payable newContract = payable(Clones.clone(implementation));
         HackedFirst(newContract).initialize(hacker, _committee, _beneficiary, governance);
 
-        emit NewHackedFirstContract(address(newContract));
+        emit NewHackedFirstContract(address(newContract), hacker, _committee, _beneficiary);
     }
 }

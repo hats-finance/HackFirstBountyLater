@@ -35,7 +35,14 @@ describe("HackedFirstFactory", function () {
       )
     ).wait();
     const instance = await this.HackedFirst.attach(tx.events[0].args._instance);
-    expect(tx).to.emit("NewHackedFirstContract").withArgs(instance.address);
+    expect(tx)
+      .to.emit("NewHackedFirstContract")
+      .withArgs(
+        instance.address,
+        hacker.address,
+        committee.address,
+        beneficiary.address
+      );
     expect(await instance.hacker()).to.equal(hacker.address);
     expect(await instance.committee()).to.equal(committee.address);
     expect(await instance.beneficiary()).to.equal(beneficiary.address);
