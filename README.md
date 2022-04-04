@@ -1,6 +1,6 @@
 # HackedFirstBountyLater
 
-Inspired by https://twitter.com/DegenSpartan/status/1509023079078723585?t=NZ_UqjiffNoAJS8AcOAHzQ&s=19, we will create a `HackedFirst` contract in which:
+Inspired by https://twitter.com/DegenSpartan/status/1509023079078723585?t=NZ_UqjiffNoAJS8AcOAHzQ&s=19, we have created a `HackedFirst` that contract in which:
 
 ## Specs
 
