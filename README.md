@@ -2,14 +2,19 @@
 
 If a white hat hacker finds a vulnerability in a protocol, they must rely on the project they hacked for a bug bounty. 
 
-This system does not always work out well. Not all projects pay out bounties in the first place, and even if a bounty program is in place, it requires the hacker to disclose the vulnerability before the severity (and hence the amount) of the bounty is determined. Hacked projects have strong incentives to downplay the severity of the vulnerability - both to save face and to pay out as little as possible. And because they now know they about the vulnerability, the hacker has no negotation power anymore. Although  many projects have a solid bug bounty program, and we have seen some Very Large bug bounties been paid out, we have also seen white hat hackers left disappointed. 
+This system does not always work out well. Not all projects pay out bounties in the first place, and even if a bounty program is in place, it requires the hacker to disclose the vulnerability before the severity (and hence the amount) of the bounty is determined. Hacked projects have strong incentives to downplay the severity of the vulnerability - both to save face and to pay out as little as possible. The hacker has no negotation power after submitting the vulnerability. 
 
-Somewhat provocatively, by https://twitter.com/DegenSpartan/status/1509023079078723585, DegenSpartan proposes to  radically change (and considerably simplify) the way bounties are assigned: 
+Although  many projects have a solid bug bounty program, and we have seen some Very Large bug bounties been paid out, we have also seen white hat hackers left disappointed. 
+
+Somewhat provocatively, in https://twitter.com/DegenSpartan/status/1509023079078723585, DegenSpartan proposes to  radically change (and considerably simplify) the way bounties are assigned: 
 
 > .. we should completely normalize and accept "hack first - bounty later" with 10% of amount as the minimum bounty ...
 
-This repository contains a simple [contract](./contracts/HackerFirst.sol) that implements such a bounty program. It implements the "Hack first, bounty later" this idea in a naief but already useable way. What we hope to with the contracts in this repository is to have a way for the community to "completely normalize and accept" the Hacked First model by offering a concrete on-chain implementation of the model. 
+This repository contains a simple [contract](./contracts/HackerFirst.sol) that implements such an *ad hoc* bounty program. It implements the "Hack First, Bounty Later" idea in a naief but straightforward way. 
 
+With the contracts in this repository we provide a way for the community to "completely normalize and accept" the Hacked First model by offering a concrete contract that can help white hat hackers to negotiate a fair bounty for their work.
+
+The contracts are deployed on XXX and YYY.
 
 ## Specs
 
