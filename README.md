@@ -8,7 +8,7 @@ Somewhat provocatively, by https://twitter.com/DegenSpartan/status/1509023079078
 
 > .. we should completely normalize and accept "hack first - bounty later" with 10% of amount as the minimum bounty ...
 
-This repository contains a simple [contract](./contracts/HackedFirst.sol) that implements such a bounty program.
+This repository contains a simple [contract](./contracts/HackedFirst.sol) that implements such a bounty program that implements this idea in a naief but already useable way. What we hope to with the contracts in this repository is to have a way for the community to "completely normalize and accept" the Hacked First model by offering a concrete on-chain implementation of the model. 
 
 
 ## Specs
