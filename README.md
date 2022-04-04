@@ -1,6 +1,15 @@
 # HackedFirstBountyLater
 
-Inspired by https://twitter.com/DegenSpartan/status/1509023079078723585?t=NZ_UqjiffNoAJS8AcOAHzQ&s=19, we will create a `HackedFirst` contract in which:
+If a white hat hacker finds a vulnerability in a protocol, they must rely on the project they hacked for a bug bounty. 
+
+This system does not always work out well. A bounty program requires the hacker to disclose the vulnerability before the severity (and hance the amount) of the bounty is determined. Hacked projects have strong incentives to downplay the severity and pay out as little as possible - after all, now they about the vulnerability, the hacker has no negotation power anymore. Although  many projects have a solid bug bounty program, and we have seen some Very Large bug bounties been paid out, we have also seen white hat hackers left disappointed. 
+
+Somewhat provocatively, by https://twitter.com/DegenSpartan/status/1509023079078723585, DegenSpartan proposes to  radically change (and considerably simplifies) the way bounties are assigned: 
+
+> .. we should completely normalize and accept "hack first - bounty later" with 10% of amount as the minimum bounty ...
+
+This repository contains a simple [contract](./contracts/HackedFirst.sol) that implements such a bounty program.
+
 
 ## Specs
 
