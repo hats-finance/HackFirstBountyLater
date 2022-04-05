@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
 
-contract HackedFirst is Initializable, ReentrancyGuard {
+contract HackFirst is Initializable, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
     address public hacker;

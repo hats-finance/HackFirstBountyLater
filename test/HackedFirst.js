@@ -2,9 +2,9 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const { deployFactory } = require("../scripts/deploy-factory.js");
 
-describe("HackedFirstFactory", function () {
+describe("HackFirstFactory", function () {
   before(async function () {
-    this.HackedFirst = await ethers.getContractFactory("HackedFirst");
+    this.HackFirst = await ethers.getContractFactory("HackFirst");
     this.accounts = await ethers.getSigners();
     this.hats = this.accounts[0];
     const deployResults = await deployFactory(this.hats.address, true);
@@ -31,20 +31,20 @@ describe("HackedFirstFactory", function () {
     const hats = this.hats;
 
     await expect(
-      this.hackedFirstFactory.createHackedFirstContract(
+      this.hackedFirstFactory.createHackFirstContract(
         hacker.address,
         "0x0000000000000000000000000000000000000000"
       )
     ).to.be.revertedWith("Must have committee");
 
     const tx = await (
-      await this.hackedFirstFactory.createHackedFirstContract(
+      await this.hackedFirstFactory.createHackFirstContract(
         hacker.address,
         committee.address
       )
     ).wait();
-    const instance = await this.HackedFirst.attach(tx.events[0].args._instance);
-    expect(tx).to.emit("NewHackedFirstContract").withArgs(instance.address);
+    const instance = await this.HackFirst.attach(tx.events[0].args._instance);
+    expect(tx).to.emit("NewHackFirstContract").withArgs(instance.address);
     expect(await instance.hacker()).to.equal(hacker.address);
     expect(await instance.committee()).to.equal(committee.address);
     expect(await instance.hats()).to.equal(hats.address);
@@ -60,12 +60,12 @@ describe("HackedFirstFactory", function () {
     const newCommittee = this.accounts[4];
 
     let tx = await (
-      await this.hackedFirstFactory.createHackedFirstContract(
+      await this.hackedFirstFactory.createHackFirstContract(
         hacker.address,
         committee.address
       )
     ).wait();
-    const instance = await this.HackedFirst.attach(tx.events[0].args._instance);
+    const instance = await this.HackFirst.attach(tx.events[0].args._instance);
     await expect(
       instance.changeCommittee(newCommittee.address)
     ).to.be.revertedWith("Only committee");
@@ -83,12 +83,12 @@ describe("HackedFirstFactory", function () {
     const beneficiary = this.accounts[3];
 
     let tx = await (
-      await this.hackedFirstFactory.createHackedFirstContract(
+      await this.hackedFirstFactory.createHackFirstContract(
         hacker.address,
         committee.address
       )
     ).wait();
-    const instance = await this.HackedFirst.attach(tx.events[0].args._instance);
+    const instance = await this.HackFirst.attach(tx.events[0].args._instance);
     await expect(
       instance.retrieveFunds(
         beneficiary.address,
@@ -203,12 +203,12 @@ describe("HackedFirstFactory", function () {
     const beneficiary = this.accounts[3];
 
     let tx = await (
-      await this.hackedFirstFactory.createHackedFirstContract(
+      await this.hackedFirstFactory.createHackFirstContract(
         hacker.address,
         committee.address
       )
     ).wait();
-    const instance = await this.HackedFirst.attach(tx.events[0].args._instance);
+    const instance = await this.HackFirst.attach(tx.events[0].args._instance);
 
     await hacker.sendTransaction({
       to: instance.address,
@@ -286,12 +286,12 @@ describe("HackedFirstFactory", function () {
     const beneficiary = this.accounts[3];
 
     let tx = await (
-      await this.hackedFirstFactory.createHackedFirstContract(
+      await this.hackedFirstFactory.createHackFirstContract(
         hacker.address,
         committee.address
       )
     ).wait();
-    const instance = await this.HackedFirst.attach(tx.events[0].args._instance);
+    const instance = await this.HackFirst.attach(tx.events[0].args._instance);
 
     await hacker.sendTransaction({
       to: instance.address,
@@ -359,12 +359,12 @@ describe("HackedFirstFactory", function () {
     const beneficiary = this.hackedFirstFactory;
 
     const tx = await (
-      await this.hackedFirstFactory.createHackedFirstContract(
+      await this.hackedFirstFactory.createHackFirstContract(
         hacker.address,
         committee.address
       )
     ).wait();
-    const instance = await this.HackedFirst.attach(tx.events[0].args._instance);
+    const instance = await this.HackFirst.attach(tx.events[0].args._instance);
 
     await hacker.sendTransaction({
       to: instance.address,
@@ -391,12 +391,12 @@ describe("HackedFirstFactory", function () {
     const beneficiary = this.accounts[3];
 
     let tx = await (
-      await this.hackedFirstFactory.createHackedFirstContract(
+      await this.hackedFirstFactory.createHackFirstContract(
         hacker.address,
         committee.address
       )
     ).wait();
-    const instance = await this.HackedFirst.attach(tx.events[0].args._instance);
+    const instance = await this.HackFirst.attach(tx.events[0].args._instance);
     await expect(
       instance.retrieveFunds(beneficiary.address, 1000, 0, 0, token.address)
     ).to.be.revertedWith("Only committee");
@@ -458,12 +458,12 @@ describe("HackedFirstFactory", function () {
     const beneficiary = this.accounts[3];
 
     let tx = await (
-      await this.hackedFirstFactory.createHackedFirstContract(
+      await this.hackedFirstFactory.createHackFirstContract(
         hacker.address,
         committee.address
       )
     ).wait();
-    const instance = await this.HackedFirst.attach(tx.events[0].args._instance);
+    const instance = await this.HackFirst.attach(tx.events[0].args._instance);
 
     await token.transfer(instance.address, ethers.utils.parseEther("10"));
 
@@ -514,12 +514,12 @@ describe("HackedFirstFactory", function () {
     const beneficiary = this.accounts[3];
 
     let tx = await (
-      await this.hackedFirstFactory.createHackedFirstContract(
+      await this.hackedFirstFactory.createHackFirstContract(
         hacker.address,
         committee.address
       )
     ).wait();
-    const instance = await this.HackedFirst.attach(tx.events[0].args._instance);
+    const instance = await this.HackFirst.attach(tx.events[0].args._instance);
 
     await token.transfer(instance.address, ethers.utils.parseEther("10"));
 
