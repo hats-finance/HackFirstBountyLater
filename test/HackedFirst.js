@@ -68,13 +68,19 @@ describe("HackFirstFactory", function () {
     const instance = await this.HackFirst.attach(tx.events[0].args._instance);
     await expect(
       instance.changeCommittee(newCommittee.address)
-    ).to.be.revertedWith("Only committee");
+    ).to.be.revertedWith("Only committee or hacker");
 
     tx = await (
       await instance.connect(committee).changeCommittee(newCommittee.address)
     ).wait();
     expect(tx).to.emit("CommitteeChanged").withArgs(newCommittee.address);
     expect(await instance.committee()).to.equal(newCommittee.address);
+
+    tx = await (
+      await instance.connect(hacker).changeCommittee(committee.address)
+    ).wait();
+    expect(tx).to.emit("CommitteeChanged").withArgs(committee.address);
+    expect(await instance.committee()).to.equal(committee.address);
   });
 
   it("Retrieve funds (ETH)", async function () {

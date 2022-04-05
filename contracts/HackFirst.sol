@@ -12,7 +12,8 @@ contract HackFirst is Initializable, ReentrancyGuard {
 
     address public hacker;
     address public committee;
-    address public hats ;
+    address public hats;
+
     uint256 public constant HUNDRED_PERCENT = 10000;
     uint256 public constant MINIMUM_BOUNTY = 1000;
 
@@ -35,7 +36,8 @@ contract HackFirst is Initializable, ReentrancyGuard {
         hats = _hats;
     }
 
-    function changeCommittee(address _committee) external onlyCommittee {
+    function changeCommittee(address _committee) external {
+        require(msg.sender == committee || msg.sender == hacker, "Only committee or hacker");
         committee = _committee;
         emit CommitteeChanged(_committee);
     }
