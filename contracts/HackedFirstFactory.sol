@@ -10,20 +10,20 @@ contract HackedFirstFactory {
     address public immutable hats;
     address public immutable implementation;
 
-    event NewHackedFirstContract(address indexed _instance, address indexed _hacker, address indexed _committee, address _beneficiary);
+    event NewHackedFirstContract(address indexed _instance, address indexed _hacker, address indexed _committee);
 
     constructor(address _implementation, address _hats) {
         implementation = _implementation;
         hats = _hats;
     }
 
-    function createHackedFirstContract(address _hacker, address _committee, address _beneficiary) external {
+    function createHackedFirstContract(address _hacker, address _committee) external {
         address hacker = _hacker;
         if (hacker == address(0)) hacker = msg.sender;
         address payable newContract = payable(Clones.clone(implementation));
-        HackedFirst(newContract).initialize(hacker, _committee, _beneficiary, hats);
+        HackedFirst(newContract).initialize(hacker, _committee, hats);
 
-        emit NewHackedFirstContract(address(newContract), hacker, _committee, _beneficiary);
+        emit NewHackedFirstContract(address(newContract), hacker, _committee);
     }
 }
  
