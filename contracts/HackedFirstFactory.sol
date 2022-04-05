@@ -7,22 +7,23 @@ import "./HackedFirst.sol";
 
 contract HackedFirstFactory {
         
-    address public immutable governance;
+    address public immutable hats;
     address public immutable implementation;
 
     event NewHackedFirstContract(address indexed _instance, address indexed _hacker, address indexed _committee, address _beneficiary);
 
-    constructor(address _implementation, address _governance) {
+    constructor(address _implementation, address _hats) {
         implementation = _implementation;
-        governance = _governance;
+        hats = _hats;
     }
 
     function createHackedFirstContract(address _hacker, address _committee, address _beneficiary) external {
         address hacker = _hacker;
         if (hacker == address(0)) hacker = msg.sender;
         address payable newContract = payable(Clones.clone(implementation));
-        HackedFirst(newContract).initialize(hacker, _committee, _beneficiary, governance);
+        HackedFirst(newContract).initialize(hacker, _committee, _beneficiary, hats);
 
         emit NewHackedFirstContract(address(newContract), hacker, _committee, _beneficiary);
     }
 }
+ 

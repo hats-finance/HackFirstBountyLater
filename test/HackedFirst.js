@@ -6,8 +6,8 @@ describe("HackedFirstFactory", function () {
   before(async function () {
     this.HackedFirst = await ethers.getContractFactory("HackedFirst");
     this.accounts = await ethers.getSigners();
-    this.governance = this.accounts[0];
-    const deployResults = await deployFactory(this.governance.address, true);
+    this.hats = this.accounts[0];
+    const deployResults = await deployFactory(this.hats.address, true);
     this.hackedFirstFactory = deployResults.hackedFirstFactory;
     this.hackedFirstImplementation = deployResults.hackedFirstImplementation;
   });
@@ -16,13 +16,13 @@ describe("HackedFirstFactory", function () {
     const hacker = this.accounts[1];
     const committee = this.accounts[2];
     const beneficiary = this.accounts[3];
-    const governance = this.governance;
+    const hats = this.hats;
     await expect(
       this.hackedFirstImplementation.initialize(
         hacker.address,
         committee.address,
         beneficiary.address,
-        governance.address
+        hats.address
       )
     ).to.be.revertedWith("Initializable: contract is already initialized");
   });
@@ -31,7 +31,7 @@ describe("HackedFirstFactory", function () {
     const hacker = this.accounts[1];
     const committee = this.accounts[2];
     const beneficiary = this.accounts[3];
-    const governance = this.governance;
+    const hats = this.hats;
 
     await expect(
       this.hackedFirstFactory.createHackedFirstContract(
@@ -53,14 +53,14 @@ describe("HackedFirstFactory", function () {
     expect(await instance.hacker()).to.equal(hacker.address);
     expect(await instance.committee()).to.equal(committee.address);
     expect(await instance.beneficiary()).to.equal(beneficiary.address);
-    expect(await instance.governance()).to.equal(governance.address);
+    expect(await instance.hats()).to.equal(hats.address);
 
     await expect(
       instance.initialize(
         hacker.address,
         committee.address,
         beneficiary.address,
-        governance.address
+        hats.address
       )
     ).to.be.revertedWith("Initializable: contract is already initialized");
   });
@@ -152,7 +152,7 @@ describe("HackedFirstFactory", function () {
       committee.address
     );
     const initialBalanceGovernance = await ethers.provider.getBalance(
-      this.governance.address
+      this.hats.address
     );
     const initialBalanceBeneficiary = await ethers.provider.getBalance(
       beneficiary.address
@@ -178,7 +178,7 @@ describe("HackedFirstFactory", function () {
     expect(await ethers.provider.getBalance(committee.address)).to.equal(
       initialBalanceCommittee.add(ethers.utils.parseEther("0.2"))
     );
-    expect(await ethers.provider.getBalance(this.governance.address)).to.equal(
+    expect(await ethers.provider.getBalance(this.hats.address)).to.equal(
       initialBalanceGovernance.add(ethers.utils.parseEther("0.1"))
     );
     expect(await ethers.provider.getBalance(beneficiary.address)).to.equal(
@@ -230,7 +230,7 @@ describe("HackedFirstFactory", function () {
       committee.address
     );
     const initialBalanceGovernance = await ethers.provider.getBalance(
-      this.governance.address
+      this.hats.address
     );
     const initialBalanceBeneficiary = await ethers.provider.getBalance(
       beneficiary.address
@@ -251,7 +251,7 @@ describe("HackedFirstFactory", function () {
     expect(await ethers.provider.getBalance(committee.address)).to.equal(
       initialBalanceCommittee.add(ethers.utils.parseEther("0"))
     );
-    expect(await ethers.provider.getBalance(this.governance.address)).to.equal(
+    expect(await ethers.provider.getBalance(this.hats.address)).to.equal(
       initialBalanceGovernance.add(ethers.utils.parseEther("0"))
     );
     expect(await ethers.provider.getBalance(beneficiary.address)).to.equal(
@@ -292,7 +292,7 @@ describe("HackedFirstFactory", function () {
       committee.address
     );
     const initialBalanceGovernance = await ethers.provider.getBalance(
-      this.governance.address
+      this.hats.address
     );
     const initialBalanceBeneficiary = await ethers.provider.getBalance(
       beneficiary.address
@@ -318,7 +318,7 @@ describe("HackedFirstFactory", function () {
     expect(await ethers.provider.getBalance(committee.address)).to.equal(
       initialBalanceCommittee.add(ethers.utils.parseEther("1"))
     );
-    expect(await ethers.provider.getBalance(this.governance.address)).to.equal(
+    expect(await ethers.provider.getBalance(this.hats.address)).to.equal(
       initialBalanceGovernance.add(ethers.utils.parseEther("1"))
     );
     expect(await ethers.provider.getBalance(beneficiary.address)).to.equal(
@@ -416,7 +416,7 @@ describe("HackedFirstFactory", function () {
     expect(await token.balanceOf(committee.address)).to.equal(
       ethers.utils.parseEther("0.2")
     );
-    expect(await token.balanceOf(this.governance.address)).to.equal(
+    expect(await token.balanceOf(this.hats.address)).to.equal(
       ethers.utils.parseEther("0.1")
     );
     expect(await token.balanceOf(beneficiary.address)).to.equal(
@@ -463,7 +463,7 @@ describe("HackedFirstFactory", function () {
     expect(await token.balanceOf(committee.address)).to.equal(
       ethers.utils.parseEther("0")
     );
-    expect(await token.balanceOf(this.governance.address)).to.equal(
+    expect(await token.balanceOf(this.hats.address)).to.equal(
       ethers.utils.parseEther("0")
     );
     expect(await token.balanceOf(beneficiary.address)).to.equal(
@@ -508,7 +508,7 @@ describe("HackedFirstFactory", function () {
     expect(await token.balanceOf(committee.address)).to.equal(
       ethers.utils.parseEther("0.5")
     );
-    expect(await token.balanceOf(this.governance.address)).to.equal(
+    expect(await token.balanceOf(this.hats.address)).to.equal(
       ethers.utils.parseEther("0.5")
     );
     expect(await token.balanceOf(beneficiary.address)).to.equal(

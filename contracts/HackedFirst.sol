@@ -13,12 +13,12 @@ contract HackedFirst is Initializable, ReentrancyGuard {
     address public hacker;
     address public beneficiary;
     address public committee;
-    address public governance ;
+    address public hats ;
     uint256 public constant HUNDRED_PERCENT = 10000;
     uint256 public constant MINIMUM_BOUNTY = 1000;
 
     event BeneficiaryChanged(address indexed _newBeneficiary);
-    event FundsRetrieved(address indexed _token, uint256 _bounty, uint256 _rewardForCommittee, uint256 _rewardForGovernance);
+    event FundsRetrieved(address indexed _token, uint256 _bounty, uint256 _rewardForCommittee, uint256 _rewardForHats);
 
     modifier onlyBeneficiary() {
         require(msg.sender == beneficiary, "Only beneficiary");
@@ -34,12 +34,12 @@ contract HackedFirst is Initializable, ReentrancyGuard {
 
     receive() external payable {}
 
-    function initialize(address _hacker, address _committee, address _beneficiary, address _governance) external initializer {
+    function initialize(address _hacker, address _committee, address _beneficiary, address _hats) external initializer {
         require(_committee != address(0) || _beneficiary != address(0), "Must have committee or beneficiary");
         hacker = _hacker;
         committee = _committee;
         beneficiary = _beneficiary;
-        governance = _governance;
+        hats = _hats;
     }
 
     function setBeneficiary(address _beneficiary) external onlyCommittee {
@@ -50,11 +50,11 @@ contract HackedFirst is Initializable, ReentrancyGuard {
     function retrieveFunds(
         uint256 _bounty,
         uint256 _rewardForCommittee,
-        uint256 _rewardForGovernance,
+        uint256 _rewardForHats,
         address _token
     ) external onlyBeneficiary nonReentrant {
         require(_bounty >= MINIMUM_BOUNTY, "Bounty must be at least 10%");
-        uint256 returnedToBeneficiary = HUNDRED_PERCENT - (_bounty + _rewardForCommittee + _rewardForGovernance);
+        uint256 returnedToBeneficiary = HUNDRED_PERCENT - (_bounty + _rewardForCommittee + _rewardForHats);
         if (_token == address(0)) {
             uint256 totalReward = address(this).balance;
             require(totalReward > 0, "No ETH in the contract");
@@ -65,8 +65,8 @@ contract HackedFirst is Initializable, ReentrancyGuard {
                 sendETHReward(committee, _rewardForCommittee, totalReward);
             }
 
-            if (_rewardForGovernance > 0) {
-                sendETHReward(governance, _rewardForGovernance, totalReward);
+            if (_rewardForHats > 0) {
+                sendETHReward(hats, _rewardForHats, totalReward);
             }
 
             if (returnedToBeneficiary > 0) {
@@ -83,8 +83,8 @@ contract HackedFirst is Initializable, ReentrancyGuard {
                 IERC20(_token).safeTransfer(committee, _rewardForCommittee * totalReward / HUNDRED_PERCENT);
             }
 
-            if (_rewardForGovernance > 0) {
-                IERC20(_token).safeTransfer(governance, _rewardForGovernance * totalReward / HUNDRED_PERCENT);
+            if (_rewardForHats > 0) {
+                IERC20(_token).safeTransfer(hats, _rewardForHats * totalReward / HUNDRED_PERCENT);
 
             }
 
@@ -92,7 +92,7 @@ contract HackedFirst is Initializable, ReentrancyGuard {
                 IERC20(_token).safeTransfer(beneficiary, returnedToBeneficiary * totalReward / HUNDRED_PERCENT);
             }
         }
-        emit FundsRetrieved(_token, _bounty, _rewardForCommittee, _rewardForGovernance);
+        emit FundsRetrieved(_token, _bounty, _rewardForCommittee, _rewardForHats);
     }
 
     function sendETHReward(address _to, uint256 _rewardPercentage, uint256 _totalReward) internal {
