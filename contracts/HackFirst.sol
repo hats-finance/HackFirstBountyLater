@@ -1,16 +1,15 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.13;
 
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 
-contract HackFirst is OwnableUpgradeable, ReentrancyGuard {
-    using SafeERC20 for IERC20;
+contract HackFirst is OwnableUpgradeable, ReentrancyGuardUpgradeable {
+    using SafeERC20Upgradeable for IERC20Upgradeable;
 
     address public hacker;
-    address public hats;
     address public newOwner; // candidate for becoming the new owner of this contract, must accept 
 
     uint256 public constant HUNDRED_PERCENT = 10000;
@@ -18,13 +17,13 @@ contract HackFirst is OwnableUpgradeable, ReentrancyGuard {
 
     // TODO: should probably rename this event
     event CommitteeChanged(address indexed _newOwner);
-    event FundsRetrieved(address indexed _beneficiary, address indexed _token, uint256 _bounty, uint256 _rewardForHats);
+    event FundsRetrieved(address indexed _beneficiary, address indexed _token, uint256 _bounty);
 
     constructor() initializer {}
 
     receive() external payable {}
 
-    function initialize(address _hacker, address _newOwner, address _hats) external initializer {
+    function initialize(address _hacker, address _newOwner) external initializer {
         require(_newOwner != address(0), "Must have committee");
 
         hacker = _hacker;
@@ -34,7 +33,6 @@ contract HackFirst is OwnableUpgradeable, ReentrancyGuard {
 
         // we do not transfer ownership to the _newOwner address yet, the _newOwner must first accept 
         newOwner = _newOwner;
-        hats = _hats;
     }
 
     /**
@@ -56,6 +54,7 @@ contract HackFirst is OwnableUpgradeable, ReentrancyGuard {
 
     // renouncing ownership will return ownership of the funds to the hacker
     function renounceOwnership() public virtual override onlyOwner {
+        newOwner = address(0);
         _transferOwnership(hacker);
     }
 
@@ -63,19 +62,14 @@ contract HackFirst is OwnableUpgradeable, ReentrancyGuard {
     function retrieveFunds(
         address _beneficiary,
         uint256 _bounty,
-        uint256 _rewardForHats,
         address _token
     ) external onlyOwner nonReentrant {
         require(_bounty >= MINIMUM_BOUNTY, "Bounty must be at least 10%");
-        uint256 returnedToBeneficiary = HUNDRED_PERCENT - (_bounty + _rewardForHats);
+        uint256 returnedToBeneficiary = HUNDRED_PERCENT - _bounty;
         if (_token == address(0)) {
             uint256 totalReward = address(this).balance;
             require(totalReward > 0, "No ETH in the contract");
             sendETHReward(hacker, _bounty, totalReward);
-
-            if (_rewardForHats > 0) {
-                sendETHReward(hats, _rewardForHats, totalReward);
-            }
 
             if (returnedToBeneficiary > 0) {
                 require(_beneficiary != address(0), "Cannot send to 0 address");
@@ -83,21 +77,16 @@ contract HackFirst is OwnableUpgradeable, ReentrancyGuard {
             }
         } else {
             // tranfer all _token held by this contract to the different parties
-            uint256 totalReward = IERC20(_token).balanceOf(address(this));
+            uint256 totalReward = IERC20Upgradeable(_token).balanceOf(address(this));
             require(totalReward > 0, "No tokens in the contract");
-            IERC20(_token).safeTransfer(hacker, _bounty * totalReward / HUNDRED_PERCENT);
-
-            if (_rewardForHats > 0) {
-                IERC20(_token).safeTransfer(hats, _rewardForHats * totalReward / HUNDRED_PERCENT);
-
-            }
+            IERC20Upgradeable(_token).safeTransfer(hacker, _bounty * totalReward / HUNDRED_PERCENT);
 
             if (returnedToBeneficiary > 0) {
                 require(_beneficiary != address(0), "Cannot send to 0 address");
-                IERC20(_token).safeTransfer(_beneficiary, returnedToBeneficiary * totalReward / HUNDRED_PERCENT);
+                IERC20Upgradeable(_token).safeTransfer(_beneficiary, returnedToBeneficiary * totalReward / HUNDRED_PERCENT);
             }
         }
-        emit FundsRetrieved(_beneficiary, _token, _bounty, _rewardForHats);
+        emit FundsRetrieved(_beneficiary, _token, _bounty);
     }
 
     function sendETHReward(address _to, uint256 _rewardPercentage, uint256 _totalReward) internal {

@@ -6,8 +6,7 @@ describe("HackFirstFactory", function () {
   before(async function () {
     this.HackFirst = await ethers.getContractFactory("HackFirst");
     this.accounts = await ethers.getSigners();
-    this.hats = this.accounts[0];
-    const deployResults = await deployFactory(this.hats.address, true);
+    const deployResults = await deployFactory(true);
     this.hackedFirstFactory = deployResults.hackedFirstFactory;
     this.hackedFirstImplementation = deployResults.hackedFirstImplementation;
   });
@@ -15,12 +14,10 @@ describe("HackFirstFactory", function () {
   it("Cannot initialize the master copy", async function () {
     const hacker = this.accounts[1];
     const committee = this.accounts[2];
-    const hats = this.hats;
     await expect(
       this.hackedFirstImplementation.initialize(
         hacker.address,
-        committee.address,
-        hats.address
+        committee.address
       )
     ).to.be.revertedWith("Initializable: contract is already initialized");
   });
@@ -28,7 +25,6 @@ describe("HackFirstFactory", function () {
   it("Deploy an instance", async function () {
     const hacker = this.accounts[1];
     const committee = this.accounts[2];
-    const hats = this.hats;
 
     await expect(
       this.hackedFirstFactory.createHackFirstContract(
@@ -48,10 +44,9 @@ describe("HackFirstFactory", function () {
     expect(await instance.hacker()).to.equal(hacker.address);
     expect(await instance.owner()).to.equal(hacker.address);
     expect(await instance.newOwner()).to.equal(committee.address);
-    expect(await instance.hats()).to.equal(hats.address);
 
     await expect(
-      instance.initialize(hacker.address, committee.address, hats.address)
+      instance.initialize(hacker.address, committee.address)
     ).to.be.revertedWith("Initializable: contract is already initialized");
   });
 
@@ -107,7 +102,6 @@ describe("HackFirstFactory", function () {
       instance.retrieveFunds(
         beneficiary.address,
         1000,
-        0,
         "0x0000000000000000000000000000000000000000"
       )
     ).to.be.revertedWith("Ownable: caller is not the owner");
@@ -118,7 +112,6 @@ describe("HackFirstFactory", function () {
         .retrieveFunds(
           beneficiary.address,
           1000,
-          0,
           "0x0000000000000000000000000000000000000000"
         )
     ).to.be.revertedWith("Ownable: caller is not the owner");
@@ -131,7 +124,6 @@ describe("HackFirstFactory", function () {
         .retrieveFunds(
           beneficiary.address,
           10,
-          0,
           "0x0000000000000000000000000000000000000000"
         )
     ).to.be.revertedWith("Bounty must be at least 10%");
@@ -141,8 +133,7 @@ describe("HackFirstFactory", function () {
         .connect(committee)
         .retrieveFunds(
           beneficiary.address,
-          6000,
-          5000,
+          10001,
           "0x0000000000000000000000000000000000000000"
         )
     ).to.be.revertedWith(
@@ -155,7 +146,6 @@ describe("HackFirstFactory", function () {
         .retrieveFunds(
           beneficiary.address,
           1000,
-          0,
           "0x0000000000000000000000000000000000000000"
         )
     ).to.be.revertedWith("No ETH in the contract");
@@ -171,93 +161,26 @@ describe("HackFirstFactory", function () {
     const initialBalanceHacker = await ethers.provider.getBalance(
       hacker.address
     );
-    const initialBalanceGovernance = await ethers.provider.getBalance(
-      this.hats.address
-    );
     const initialBalanceBeneficiary = await ethers.provider.getBalance(
       beneficiary.address
     );
 
-    tx = await (
-      await instance
-        .connect(committee)
-        .retrieveFunds(
-          beneficiary.address,
-          1000,
-          100,
-          "0x0000000000000000000000000000000000000000"
-        )
-    ).wait();
-    expect(tx)
-      .to.emit("FundsRetrieved")
-      .withArgs(
-        beneficiary.address,
-        "0x0000000000000000000000000000000000000000",
-        1000,
-        100
-      );
-    expect(await ethers.provider.getBalance(instance.address)).to.equal(0);
-    expect(await ethers.provider.getBalance(hacker.address)).to.equal(
-      initialBalanceHacker.add(ethers.utils.parseEther("1"))
-    );
-    expect(await ethers.provider.getBalance(this.hats.address)).to.equal(
-      initialBalanceGovernance.add(ethers.utils.parseEther("0.1"))
-    );
-    expect(await ethers.provider.getBalance(beneficiary.address)).to.equal(
-      initialBalanceBeneficiary.add(ethers.utils.parseEther("8.9"))
-    );
-  });
-
-  it("Retrieve funds (ETH no tips)", async function () {
-    const hacker = this.accounts[1];
-    const committee = this.accounts[2];
-    const beneficiary = this.accounts[3];
-
-    let tx = await (
-      await this.hackedFirstFactory.createHackFirstContract(
-        hacker.address,
-        committee.address
-      )
-    ).wait();
-    const instance = await this.HackFirst.attach(tx.events[1].args._instance);
-    await instance.connect(committee).acceptOwnership();
-
-    await hacker.sendTransaction({
-      to: instance.address,
-      value: ethers.utils.parseEther("10"),
-    });
-    expect(await instance.owner()).to.be.equal(committee.address);
     await expect(
       instance
         .connect(committee)
         .retrieveFunds(
           "0x0000000000000000000000000000000000000000",
           1000,
-          0,
           "0x0000000000000000000000000000000000000000"
         )
     ).to.be.revertedWith("Cannot send to 0 address");
-
-    expect(await ethers.provider.getBalance(instance.address)).to.equal(
-      ethers.utils.parseEther("10")
-    );
-    const initialBalanceHacker = await ethers.provider.getBalance(
-      hacker.address
-    );
-    const initialBalanceGovernance = await ethers.provider.getBalance(
-      this.hats.address
-    );
-    const initialBalanceBeneficiary = await ethers.provider.getBalance(
-      beneficiary.address
-    );
 
     tx = await (
       await instance
         .connect(committee)
         .retrieveFunds(
           beneficiary.address,
-          2000,
-          0,
+          1000,
           "0x0000000000000000000000000000000000000000"
         )
     ).wait();
@@ -266,18 +189,14 @@ describe("HackFirstFactory", function () {
       .withArgs(
         beneficiary.address,
         "0x0000000000000000000000000000000000000000",
-        2000,
-        0
+        1000
       );
     expect(await ethers.provider.getBalance(instance.address)).to.equal(0);
     expect(await ethers.provider.getBalance(hacker.address)).to.equal(
-      initialBalanceHacker.add(ethers.utils.parseEther("2"))
-    );
-    expect(await ethers.provider.getBalance(this.hats.address)).to.equal(
-      initialBalanceGovernance.add(ethers.utils.parseEther("0"))
+      initialBalanceHacker.add(ethers.utils.parseEther("1"))
     );
     expect(await ethers.provider.getBalance(beneficiary.address)).to.equal(
-      initialBalanceBeneficiary.add(ethers.utils.parseEther("8"))
+      initialBalanceBeneficiary.add(ethers.utils.parseEther("9"))
     );
   });
 
@@ -305,9 +224,7 @@ describe("HackFirstFactory", function () {
     const initialBalanceHacker = await ethers.provider.getBalance(
       hacker.address
     );
-    const initialBalanceGovernance = await ethers.provider.getBalance(
-      this.hats.address
-    );
+
     const initialBalanceBeneficiary = await ethers.provider.getBalance(
       beneficiary.address
     );
@@ -319,8 +236,7 @@ describe("HackFirstFactory", function () {
         .connect(committee)
         .retrieveFunds(
           beneficiary.address,
-          8000,
-          2000,
+          10000,
           "0x0000000000000000000000000000000000000000"
         )
     ).wait();
@@ -329,15 +245,11 @@ describe("HackFirstFactory", function () {
       .withArgs(
         beneficiary.address,
         "0x0000000000000000000000000000000000000000",
-        8000,
-        2000
+        10000
       );
     expect(await ethers.provider.getBalance(instance.address)).to.equal(0);
     expect(await ethers.provider.getBalance(hacker.address)).to.equal(
-      initialBalanceHacker.add(ethers.utils.parseEther("8"))
-    );
-    expect(await ethers.provider.getBalance(this.hats.address)).to.equal(
-      initialBalanceGovernance.add(ethers.utils.parseEther("2"))
+      initialBalanceHacker.add(ethers.utils.parseEther("10"))
     );
     expect(await ethers.provider.getBalance(beneficiary.address)).to.equal(
       initialBalanceBeneficiary.add(ethers.utils.parseEther("0"))
@@ -370,7 +282,6 @@ describe("HackFirstFactory", function () {
         .retrieveFunds(
           beneficiary.address,
           1000,
-          100,
           "0x0000000000000000000000000000000000000000"
         )
     ).to.be.revertedWith("Failed to send ETH");
@@ -392,19 +303,19 @@ describe("HackFirstFactory", function () {
     const instance = await this.HackFirst.attach(tx.events[1].args._instance);
     await instance.connect(committee).acceptOwnership();
     await expect(
-      instance.retrieveFunds(beneficiary.address, 1000, 0, token.address)
+      instance.retrieveFunds(beneficiary.address, 1000, token.address)
     ).to.be.revertedWith("Ownable: caller is not the owner");
 
     await expect(
       instance
         .connect(committee)
-        .retrieveFunds(beneficiary.address, 10, 0, token.address)
+        .retrieveFunds(beneficiary.address, 10, token.address)
     ).to.be.revertedWith("Bounty must be at least 10%");
 
     await expect(
       instance
         .connect(committee)
-        .retrieveFunds(beneficiary.address, 6000, 5000, token.address)
+        .retrieveFunds(beneficiary.address, 11000, token.address)
     ).to.be.revertedWith(
       "panic code 0x11 (Arithmetic operation underflowed or overflowed outside of an unchecked block)"
     );
@@ -412,7 +323,7 @@ describe("HackFirstFactory", function () {
     await expect(
       instance
         .connect(committee)
-        .retrieveFunds(beneficiary.address, 1000, 0, token.address)
+        .retrieveFunds(beneficiary.address, 1000, token.address)
     ).to.be.revertedWith("No tokens in the contract");
 
     await token.transfer(instance.address, ethers.utils.parseEther("10"));
@@ -421,76 +332,30 @@ describe("HackFirstFactory", function () {
       ethers.utils.parseEther("10")
     );
 
-    tx = await (
-      await instance
-        .connect(committee)
-        .retrieveFunds(beneficiary.address, 1000, 100, token.address)
-    ).wait();
-    expect(tx)
-      .to.emit("FundsRetrieved")
-      .withArgs(beneficiary.address, token.address, 1000, 100);
-    expect(await token.balanceOf(instance.address)).to.equal(0);
-    expect(await token.balanceOf(hacker.address)).to.equal(
-      ethers.utils.parseEther("1")
-    );
-    expect(await token.balanceOf(this.hats.address)).to.equal(
-      ethers.utils.parseEther("0.1")
-    );
-    expect(await token.balanceOf(beneficiary.address)).to.equal(
-      ethers.utils.parseEther("8.9")
-    );
-  });
-
-  it("Retrieve funds (ERC20 no tips)", async function () {
-    const MockERC20 = await ethers.getContractFactory("MockERC20");
-    const token = await MockERC20.deploy();
-    const hacker = this.accounts[1];
-    const committee = this.accounts[2];
-    const beneficiary = this.accounts[3];
-
-    let tx = await (
-      await this.hackedFirstFactory.createHackFirstContract(
-        hacker.address,
-        committee.address
-      )
-    ).wait();
-    const instance = await this.HackFirst.attach(tx.events[1].args._instance);
-    await instance.connect(committee).acceptOwnership();
-
-    await token.transfer(instance.address, ethers.utils.parseEther("10"));
-
     await expect(
       instance
         .connect(committee)
         .retrieveFunds(
           "0x0000000000000000000000000000000000000000",
           1000,
-          0,
           token.address
         )
     ).to.be.revertedWith("Cannot send to 0 address");
 
-    expect(await token.balanceOf(instance.address)).to.equal(
-      ethers.utils.parseEther("10")
-    );
-
     tx = await (
       await instance
         .connect(committee)
-        .retrieveFunds(beneficiary.address, 2000, 0, token.address)
+        .retrieveFunds(beneficiary.address, 1000, token.address)
     ).wait();
     expect(tx)
       .to.emit("FundsRetrieved")
-      .withArgs(beneficiary.address, token.address, 2000, 0);
+      .withArgs(beneficiary.address, token.address, 1000);
     expect(await token.balanceOf(instance.address)).to.equal(0);
     expect(await token.balanceOf(hacker.address)).to.equal(
-      ethers.utils.parseEther("2")
-    );
-    expect(await token.balanceOf(this.hats.address)).to.equal(
-      ethers.utils.parseEther("0")
+      ethers.utils.parseEther("1")
     );
     expect(await token.balanceOf(beneficiary.address)).to.equal(
-      ethers.utils.parseEther("8")
+      ethers.utils.parseEther("9")
     );
   });
 
@@ -519,15 +384,12 @@ describe("HackFirstFactory", function () {
     tx = await (
       await instance
         .connect(committee)
-        .retrieveFunds(beneficiary.address, 9000, 1000, token.address)
+        .retrieveFunds(beneficiary.address, 10000, token.address)
     ).wait();
-    expect(tx).to.emit("FundsRetrieved").withArgs(token.address, 9000, 1000);
+    expect(tx).to.emit("FundsRetrieved").withArgs(token.address, 10000);
     expect(await token.balanceOf(instance.address)).to.equal(0);
     expect(await token.balanceOf(hacker.address)).to.equal(
-      ethers.utils.parseEther("9")
-    );
-    expect(await token.balanceOf(this.hats.address)).to.equal(
-      ethers.utils.parseEther("1")
+      ethers.utils.parseEther("10")
     );
     expect(await token.balanceOf(beneficiary.address)).to.equal(
       ethers.utils.parseEther("0")
