@@ -110,7 +110,7 @@ describe("HackFirstFactory", function () {
         0,
         "0x0000000000000000000000000000000000000000"
       )
-    ).to.be.revertedWith("Only committee");
+    ).to.be.revertedWith("Ownable: caller is not the owner");
 
     await expect(
       instance
@@ -121,7 +121,7 @@ describe("HackFirstFactory", function () {
           0,
           "0x0000000000000000000000000000000000000000"
         )
-    ).to.be.revertedWith("Committee must check in first");
+    ).to.be.revertedWith("Ownable: caller is not the owner");
 
     await instance.connect(committee).acceptOwnership();
 
@@ -393,7 +393,7 @@ describe("HackFirstFactory", function () {
     await instance.connect(committee).acceptOwnership();
     await expect(
       instance.retrieveFunds(beneficiary.address, 1000, 0, token.address)
-    ).to.be.revertedWith("Only committee");
+    ).to.be.revertedWith("Ownable: caller is not the owner");
 
     await expect(
       instance
