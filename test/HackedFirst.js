@@ -80,10 +80,52 @@ describe("HackFirstFactory", function () {
     );
 
     tx = await (await instance.connect(committee).acceptOwnership()).wait();
-    expect(tx).to.emit("CommitteeCheckedIn");
+    expect(tx)
+      .to.emit("OwnershipTransferred")
+      .withArgs(hacker.address, committee.address);
     await expect(
       instance.connect(hacker).transferOwnership(committee.address)
     ).to.be.revertedWith("Ownable: caller is not the owner");
+  });
+
+  it("Renounce ownership", async function () {
+    const hacker = this.accounts[1];
+    const committee = this.accounts[2];
+
+    let tx = await (
+      await this.hackedFirstFactory.createHackFirstContract(
+        hacker.address,
+        committee.address
+      )
+    ).wait();
+    const instance = await this.HackFirst.attach(tx.events[1].args._instance);
+    await expect(instance.renounceOwnership()).to.be.revertedWith(
+      "Ownable: caller is not the owner"
+    );
+
+    tx = await (
+      await instance.connect(hacker).transferOwnership(committee.address)
+    ).wait();
+    expect(tx).to.emit("CommitteeChanged").withArgs(committee.address);
+    expect(await instance.newOwner()).to.equal(committee.address);
+
+    tx = await (await instance.connect(committee).acceptOwnership()).wait();
+    expect(tx)
+      .to.emit("OwnershipTransferred")
+      .withArgs(hacker.address, committee.address);
+    expect(await instance.owner()).to.equal(committee.address);
+    expect(await instance.newOwner()).to.equal(
+      "0x0000000000000000000000000000000000000000"
+    );
+
+    tx = await (await instance.connect(committee).renounceOwnership()).wait();
+    expect(tx)
+      .to.emit("OwnershipTransferred")
+      .withArgs(committee.address, hacker.address);
+    expect(await instance.owner()).to.equal(hacker.address);
+    expect(await instance.newOwner()).to.equal(
+      "0x0000000000000000000000000000000000000000"
+    );
   });
 
   it("Retrieve funds (ETH)", async function () {
