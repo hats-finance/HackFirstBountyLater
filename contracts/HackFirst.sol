@@ -50,8 +50,8 @@ contract HackFirst is OwnableUpgradeable, ReentrancyGuard {
         
     function acceptOwnership() external {
         require(msg.sender == newOwner, "must be newOwner to accept ownership");
-        newOwner = address(0);
         _transferOwnership(newOwner);
+        newOwner = address(0);
     }
 
     // renouncing ownership will return ownership of the funds to the hacker

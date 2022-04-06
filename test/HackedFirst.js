@@ -226,7 +226,7 @@ describe("HackFirstFactory", function () {
       to: instance.address,
       value: ethers.utils.parseEther("10"),
     });
-
+    expect(await instance.owner()).to.be.equal(committee.address);
     await expect(
       instance
         .connect(committee)
