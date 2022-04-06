@@ -43,6 +43,7 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "4.5.0",
-    "@openzeppelin/contracts-upgradeable": "4.5.0"
+    "@openzeppelin/contracts-upgradeable": "4.5.0",
+    "hardhat-watcher": "^2.1.1"
   }
 }
