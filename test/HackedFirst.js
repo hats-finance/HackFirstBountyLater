@@ -70,10 +70,16 @@ describe("HackFirstFactory", function () {
       instance.connect(committee).transferOwnership(newCommittee.address)
     ).to.be.revertedWith("Ownable: caller is not the owner");
 
+    await expect(
+      instance
+        .connect(hacker)
+        .transferOwnership("0x0000000000000000000000000000000000000000")
+    ).to.be.revertedWith("Ownable: new owner is the zero address");
+
     tx = await (
       await instance.connect(hacker).transferOwnership(committee.address)
     ).wait();
-    expect(tx).to.emit("CommitteeChanged").withArgs(committee.address);
+    expect(tx).to.emit("NewOwnerProposed").withArgs(committee.address);
     expect(await instance.newOwner()).to.equal(committee.address);
     await expect(instance.acceptOwnership()).to.be.revertedWith(
       "must be newOwner to accept ownership"
@@ -106,7 +112,7 @@ describe("HackFirstFactory", function () {
     tx = await (
       await instance.connect(hacker).transferOwnership(committee.address)
     ).wait();
-    expect(tx).to.emit("CommitteeChanged").withArgs(committee.address);
+    expect(tx).to.emit("NewOwnerProposed").withArgs(committee.address);
     expect(await instance.newOwner()).to.equal(committee.address);
 
     tx = await (await instance.connect(committee).acceptOwnership()).wait();

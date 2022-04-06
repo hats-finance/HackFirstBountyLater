@@ -15,8 +15,7 @@ contract HackFirst is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     uint256 public constant HUNDRED_PERCENT = 10000;
     uint256 public constant MINIMUM_BOUNTY = 1000;
 
-    // TODO: should probably rename this event
-    event CommitteeChanged(address indexed _newOwner);
+    event NewOwnerProposed(address indexed _newOwner);
     event FundsRetrieved(address indexed _beneficiary, address indexed _token, uint256 _bounty);
 
     constructor() initializer {}
@@ -41,9 +40,9 @@ contract HackFirst is OwnableUpgradeable, ReentrancyGuardUpgradeable {
      * by calling acceptOwnership()
      */
     function transferOwnership(address _newOwner) public override virtual onlyOwner {
-        require(newOwner != address(0), "Ownable: new owner is the zero address");
+        require(_newOwner != address(0), "Ownable: new owner is the zero address");
         newOwner = _newOwner;
-        emit CommitteeChanged(_newOwner);
+        emit NewOwnerProposed(_newOwner);
     }
         
     function acceptOwnership() external {
