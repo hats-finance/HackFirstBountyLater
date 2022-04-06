@@ -1,61 +1,71 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.13;
 
-
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 
-contract HackFirst is Initializable, ReentrancyGuard {
+contract HackFirst is OwnableUpgradeable, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
     address public hacker;
-    address public committee;
     address public hats;
-    bool public committeeCheckedIn;
+    address public newOwner; // candidate for becoming the new owner of this contract, must accept 
 
     uint256 public constant HUNDRED_PERCENT = 10000;
     uint256 public constant MINIMUM_BOUNTY = 1000;
 
-    event CommitteeCheckedIn();
-    event CommitteeChanged(address indexed _newCommitte);
+    // TODO: should probably rename this event
+    event CommitteeChanged(address indexed _newOwner);
     event FundsRetrieved(address indexed _beneficiary, address indexed _token, uint256 _bounty, uint256 _rewardForHats);
-
-    modifier onlyCommittee() {
-        require(msg.sender == committee, "Only committee");
-        _;
-    }
 
     constructor() initializer {}
 
     receive() external payable {}
 
-    function initialize(address _hacker, address _committee, address _hats) external initializer {
-        require(_committee != address(0), "Must have committee");
+    function initialize(address _hacker, address _newOwner, address _hats) external initializer {
+        require(_newOwner != address(0), "Must have committee");
+
         hacker = _hacker;
-        committee = _committee;
+
+        // instead of directly setting _owner = hacker, we should call transferOwnership so we get the proper event
+        _transferOwnership(_hacker);
+
+        // we do not transfer ownership to the _newOwner address yet, the _newOwner must first accept 
+        newOwner = _newOwner;
         hats = _hats;
     }
 
-    function changeCommittee(address _committee) external {
-        require(msg.sender == committee || (msg.sender == hacker && !committeeCheckedIn), "Only committee or hacker");
-        committee = _committee;
-        emit CommitteeChanged(_committee);
+    /**
+     * @dev Transfers ownership of the contract to a new account (`newOwner`).
+     * Can only be called by the current owner. The new owner must first accept the ownership
+     * by calling acceptOwnership()
+     */
+    function transferOwnership(address _newOwner) public override virtual onlyOwner {
+        require(newOwner != address(0), "Ownable: new owner is the zero address");
+        newOwner = _newOwner;
+        emit CommitteeChanged(_newOwner);
+    }
+        
+    function acceptOwnership() external {
+        require(msg.sender == newOwner, "must be newOwner to accept ownership");
+        newOwner = address(0);
+        _transferOwnership(newOwner);
     }
 
-    function committeeCheckIn() external onlyCommittee {
-        committeeCheckedIn = true;
-        emit CommitteeCheckedIn();
+    // renouncing ownership will return ownership of the funds to the hacker
+    function renounceOwnership() public virtual override onlyOwner {
+        _transferOwnership(hacker);
     }
+
 
     function retrieveFunds(
         address _beneficiary,
         uint256 _bounty,
         uint256 _rewardForHats,
         address _token
-    ) external onlyCommittee nonReentrant {
-        require(committeeCheckedIn, "Committee must check in first");
+    ) external onlyOwner nonReentrant {
         require(_bounty >= MINIMUM_BOUNTY, "Bounty must be at least 10%");
         uint256 returnedToBeneficiary = HUNDRED_PERCENT - (_bounty + _rewardForHats);
         if (_token == address(0)) {

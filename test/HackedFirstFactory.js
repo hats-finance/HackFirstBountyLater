@@ -32,12 +32,12 @@ describe("HackFirstFactory", function () {
         committee.address
       )
     ).wait();
-    const instance = await this.HackFirst.attach(tx.events[0].args._instance);
+    const instance = await this.HackFirst.attach(tx.events[1].args._instance);
     expect(tx)
       .to.emit("NewHackFirstContract")
       .withArgs(instance.address, hacker.address, committee.address);
     expect(await instance.hacker()).to.equal(hacker.address);
-    expect(await instance.committee()).to.equal(committee.address);
+    expect(await instance.newOwner()).to.equal(committee.address);
     expect(await instance.hats()).to.equal(hats.address);
   });
 
@@ -51,10 +51,10 @@ describe("HackFirstFactory", function () {
         committee.address
       )
     ).wait();
-    const instance = await this.HackFirst.attach(tx.events[0].args._instance);
+    const instance = await this.HackFirst.attach(tx.events[1].args._instance);
     expect(tx).to.emit("NewHackFirstContract").withArgs(instance.address);
     expect(await instance.hacker()).to.equal(this.accounts[0].address);
-    expect(await instance.committee()).to.equal(committee.address);
+    expect(await instance.newOwner()).to.equal(committee.address);
     expect(await instance.hats()).to.equal(hats.address);
   });
 });

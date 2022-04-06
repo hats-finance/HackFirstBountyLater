@@ -43,10 +43,11 @@ describe("HackFirstFactory", function () {
         committee.address
       )
     ).wait();
-    const instance = await this.HackFirst.attach(tx.events[0].args._instance);
+    const instance = await this.HackFirst.attach(tx.events[1].args._instance);
     expect(tx).to.emit("NewHackFirstContract").withArgs(instance.address);
     expect(await instance.hacker()).to.equal(hacker.address);
-    expect(await instance.committee()).to.equal(committee.address);
+    expect(await instance.owner()).to.equal(hacker.address);
+    expect(await instance.newOwner()).to.equal(committee.address);
     expect(await instance.hats()).to.equal(hats.address);
 
     await expect(
@@ -65,32 +66,29 @@ describe("HackFirstFactory", function () {
         committee.address
       )
     ).wait();
-    const instance = await this.HackFirst.attach(tx.events[0].args._instance);
+    const instance = await this.HackFirst.attach(tx.events[1].args._instance);
     await expect(
-      instance.changeCommittee(newCommittee.address)
-    ).to.be.revertedWith("Only committee or hacker");
+      instance.transferOwnership(newCommittee.address)
+    ).to.be.revertedWith("Ownable: caller is not the owner");
+
+    await expect(
+      instance.connect(committee).transferOwnership(newCommittee.address)
+    ).to.be.revertedWith("Ownable: caller is not the owner");
 
     tx = await (
-      await instance.connect(committee).changeCommittee(newCommittee.address)
-    ).wait();
-    expect(tx).to.emit("CommitteeChanged").withArgs(newCommittee.address);
-    expect(await instance.committee()).to.equal(newCommittee.address);
-
-    tx = await (
-      await instance.connect(hacker).changeCommittee(committee.address)
+      await instance.connect(hacker).transferOwnership(committee.address)
     ).wait();
     expect(tx).to.emit("CommitteeChanged").withArgs(committee.address);
-    expect(await instance.committee()).to.equal(committee.address);
-    await expect(instance.committeeCheckIn()).to.be.revertedWith(
-      "Only committee"
+    expect(await instance.newOwner()).to.equal(committee.address);
+    await expect(instance.acceptOwnership()).to.be.revertedWith(
+      "must be newOwner to accept ownership"
     );
 
-    tx = await (await instance.connect(committee).committeeCheckIn()).wait();
+    tx = await (await instance.connect(committee).acceptOwnership()).wait();
     expect(tx).to.emit("CommitteeCheckedIn");
-    expect(await instance.committeeCheckedIn()).to.equal(true);
     await expect(
-      instance.connect(hacker).changeCommittee(committee.address)
-    ).to.be.revertedWith("Only committee or hacker");
+      instance.connect(hacker).transferOwnership(committee.address)
+    ).to.be.revertedWith("Ownable: caller is not the owner");
   });
 
   it("Retrieve funds (ETH)", async function () {
@@ -104,7 +102,7 @@ describe("HackFirstFactory", function () {
         committee.address
       )
     ).wait();
-    const instance = await this.HackFirst.attach(tx.events[0].args._instance);
+    const instance = await this.HackFirst.attach(tx.events[1].args._instance);
     await expect(
       instance.retrieveFunds(
         beneficiary.address,
@@ -125,7 +123,7 @@ describe("HackFirstFactory", function () {
         )
     ).to.be.revertedWith("Committee must check in first");
 
-    await instance.connect(committee).committeeCheckIn();
+    await instance.connect(committee).acceptOwnership();
 
     await expect(
       instance
@@ -221,8 +219,8 @@ describe("HackFirstFactory", function () {
         committee.address
       )
     ).wait();
-    const instance = await this.HackFirst.attach(tx.events[0].args._instance);
-    await instance.connect(committee).committeeCheckIn();
+    const instance = await this.HackFirst.attach(tx.events[1].args._instance);
+    await instance.connect(committee).acceptOwnership();
 
     await hacker.sendTransaction({
       to: instance.address,
@@ -294,7 +292,7 @@ describe("HackFirstFactory", function () {
         committee.address
       )
     ).wait();
-    const instance = await this.HackFirst.attach(tx.events[0].args._instance);
+    const instance = await this.HackFirst.attach(tx.events[1].args._instance);
 
     await hacker.sendTransaction({
       to: instance.address,
@@ -314,7 +312,7 @@ describe("HackFirstFactory", function () {
       beneficiary.address
     );
 
-    await instance.connect(committee).committeeCheckIn();
+    await instance.connect(committee).acceptOwnership();
 
     tx = await (
       await instance
@@ -357,14 +355,14 @@ describe("HackFirstFactory", function () {
         committee.address
       )
     ).wait();
-    const instance = await this.HackFirst.attach(tx.events[0].args._instance);
+    const instance = await this.HackFirst.attach(tx.events[1].args._instance);
 
     await hacker.sendTransaction({
       to: instance.address,
       value: ethers.utils.parseEther("10"),
     });
 
-    await instance.connect(committee).committeeCheckIn();
+    await instance.connect(committee).acceptOwnership();
 
     await expect(
       instance
@@ -391,8 +389,8 @@ describe("HackFirstFactory", function () {
         committee.address
       )
     ).wait();
-    const instance = await this.HackFirst.attach(tx.events[0].args._instance);
-    await instance.connect(committee).committeeCheckIn();
+    const instance = await this.HackFirst.attach(tx.events[1].args._instance);
+    await instance.connect(committee).acceptOwnership();
     await expect(
       instance.retrieveFunds(beneficiary.address, 1000, 0, token.address)
     ).to.be.revertedWith("Only committee");
@@ -456,8 +454,8 @@ describe("HackFirstFactory", function () {
         committee.address
       )
     ).wait();
-    const instance = await this.HackFirst.attach(tx.events[0].args._instance);
-    await instance.connect(committee).committeeCheckIn();
+    const instance = await this.HackFirst.attach(tx.events[1].args._instance);
+    await instance.connect(committee).acceptOwnership();
 
     await token.transfer(instance.address, ethers.utils.parseEther("10"));
 
@@ -509,8 +507,8 @@ describe("HackFirstFactory", function () {
         committee.address
       )
     ).wait();
-    const instance = await this.HackFirst.attach(tx.events[0].args._instance);
-    await instance.connect(committee).committeeCheckIn();
+    const instance = await this.HackFirst.attach(tx.events[1].args._instance);
+    await instance.connect(committee).acceptOwnership();
 
     await token.transfer(instance.address, ethers.utils.parseEther("10"));
 
