@@ -13,10 +13,12 @@ contract HackFirst is Initializable, ReentrancyGuard {
     address public hacker;
     address public committee;
     address public hats;
+    bool public committeeCheckedIn;
 
     uint256 public constant HUNDRED_PERCENT = 10000;
     uint256 public constant MINIMUM_BOUNTY = 1000;
 
+    event CommitteeCheckedIn();
     event CommitteeChanged(address indexed _newCommitte);
     event FundsRetrieved(address indexed _beneficiary, address indexed _token, uint256 _bounty, uint256 _rewardForHats);
 
@@ -37,9 +39,14 @@ contract HackFirst is Initializable, ReentrancyGuard {
     }
 
     function changeCommittee(address _committee) external {
-        require(msg.sender == committee || msg.sender == hacker, "Only committee or hacker");
+        require(msg.sender == committee || (msg.sender == hacker && !committeeCheckedIn), "Only committee or hacker");
         committee = _committee;
         emit CommitteeChanged(_committee);
+    }
+
+    function committeeCheckIn() external onlyCommittee {
+        committeeCheckedIn = true;
+        emit CommitteeCheckedIn();
     }
 
     function retrieveFunds(
@@ -48,6 +55,7 @@ contract HackFirst is Initializable, ReentrancyGuard {
         uint256 _rewardForHats,
         address _token
     ) external onlyCommittee nonReentrant {
+        require(committeeCheckedIn, "Committee must check in first");
         require(_bounty >= MINIMUM_BOUNTY, "Bounty must be at least 10%");
         uint256 returnedToBeneficiary = HUNDRED_PERCENT - (_bounty + _rewardForHats);
         if (_token == address(0)) {

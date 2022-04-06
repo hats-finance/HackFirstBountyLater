@@ -81,6 +81,16 @@ describe("HackFirstFactory", function () {
     ).wait();
     expect(tx).to.emit("CommitteeChanged").withArgs(committee.address);
     expect(await instance.committee()).to.equal(committee.address);
+    await expect(instance.committeeCheckIn()).to.be.revertedWith(
+      "Only committee"
+    );
+
+    tx = await (await instance.connect(committee).committeeCheckIn()).wait();
+    expect(tx).to.emit("CommitteeCheckedIn");
+    expect(await instance.committeeCheckedIn()).to.equal(true);
+    await expect(
+      instance.connect(hacker).changeCommittee(committee.address)
+    ).to.be.revertedWith("Only committee or hacker");
   });
 
   it("Retrieve funds (ETH)", async function () {
@@ -109,7 +119,20 @@ describe("HackFirstFactory", function () {
         .connect(committee)
         .retrieveFunds(
           beneficiary.address,
+          1000,
           0,
+          "0x0000000000000000000000000000000000000000"
+        )
+    ).to.be.revertedWith("Committee must check in first");
+
+    await instance.connect(committee).committeeCheckIn();
+
+    await expect(
+      instance
+        .connect(committee)
+        .retrieveFunds(
+          beneficiary.address,
+          10,
           0,
           "0x0000000000000000000000000000000000000000"
         )
@@ -199,6 +222,7 @@ describe("HackFirstFactory", function () {
       )
     ).wait();
     const instance = await this.HackFirst.attach(tx.events[0].args._instance);
+    await instance.connect(committee).committeeCheckIn();
 
     await hacker.sendTransaction({
       to: instance.address,
@@ -290,6 +314,8 @@ describe("HackFirstFactory", function () {
       beneficiary.address
     );
 
+    await instance.connect(committee).committeeCheckIn();
+
     tx = await (
       await instance
         .connect(committee)
@@ -337,6 +363,9 @@ describe("HackFirstFactory", function () {
       to: instance.address,
       value: ethers.utils.parseEther("10"),
     });
+
+    await instance.connect(committee).committeeCheckIn();
+
     await expect(
       instance
         .connect(committee)
@@ -363,6 +392,7 @@ describe("HackFirstFactory", function () {
       )
     ).wait();
     const instance = await this.HackFirst.attach(tx.events[0].args._instance);
+    await instance.connect(committee).committeeCheckIn();
     await expect(
       instance.retrieveFunds(beneficiary.address, 1000, 0, token.address)
     ).to.be.revertedWith("Only committee");
@@ -427,6 +457,7 @@ describe("HackFirstFactory", function () {
       )
     ).wait();
     const instance = await this.HackFirst.attach(tx.events[0].args._instance);
+    await instance.connect(committee).committeeCheckIn();
 
     await token.transfer(instance.address, ethers.utils.parseEther("10"));
 
@@ -479,6 +510,7 @@ describe("HackFirstFactory", function () {
       )
     ).wait();
     const instance = await this.HackFirst.attach(tx.events[0].args._instance);
+    await instance.connect(committee).committeeCheckIn();
 
     await token.transfer(instance.address, ethers.utils.parseEther("10"));
 
