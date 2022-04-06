@@ -17,8 +17,8 @@ contract HackFirst is Initializable, ReentrancyGuard {
     uint256 public constant HUNDRED_PERCENT = 10000;
     uint256 public constant MINIMUM_BOUNTY = 1000;
 
-    event CommitteeChanged(address indexed _newCommitted);
-    event FundsRetrieved(address indexed _beneficiary, address indexed _token, uint256 _bounty, uint256 _rewardForCommittee, uint256 _rewardForHats);
+    event CommitteeChanged(address indexed _newCommitte);
+    event FundsRetrieved(address indexed _beneficiary, address indexed _token, uint256 _bounty, uint256 _rewardForHats);
 
     modifier onlyCommittee() {
         require(msg.sender == committee, "Only committee");
@@ -45,20 +45,15 @@ contract HackFirst is Initializable, ReentrancyGuard {
     function retrieveFunds(
         address _beneficiary,
         uint256 _bounty,
-        uint256 _rewardForCommittee,
         uint256 _rewardForHats,
         address _token
     ) external onlyCommittee nonReentrant {
         require(_bounty >= MINIMUM_BOUNTY, "Bounty must be at least 10%");
-        uint256 returnedToBeneficiary = HUNDRED_PERCENT - (_bounty + _rewardForCommittee + _rewardForHats);
+        uint256 returnedToBeneficiary = HUNDRED_PERCENT - (_bounty + _rewardForHats);
         if (_token == address(0)) {
             uint256 totalReward = address(this).balance;
             require(totalReward > 0, "No ETH in the contract");
             sendETHReward(hacker, _bounty, totalReward);
-
-            if (_rewardForCommittee > 0) {
-                sendETHReward(committee, _rewardForCommittee, totalReward);
-            }
 
             if (_rewardForHats > 0) {
                 sendETHReward(hats, _rewardForHats, totalReward);
@@ -74,10 +69,6 @@ contract HackFirst is Initializable, ReentrancyGuard {
             require(totalReward > 0, "No tokens in the contract");
             IERC20(_token).safeTransfer(hacker, _bounty * totalReward / HUNDRED_PERCENT);
 
-            if (_rewardForCommittee > 0) {
-                IERC20(_token).safeTransfer(committee, _rewardForCommittee * totalReward / HUNDRED_PERCENT);
-            }
-
             if (_rewardForHats > 0) {
                 IERC20(_token).safeTransfer(hats, _rewardForHats * totalReward / HUNDRED_PERCENT);
 
@@ -88,7 +79,7 @@ contract HackFirst is Initializable, ReentrancyGuard {
                 IERC20(_token).safeTransfer(_beneficiary, returnedToBeneficiary * totalReward / HUNDRED_PERCENT);
             }
         }
-        emit FundsRetrieved(_beneficiary, _token, _bounty, _rewardForCommittee, _rewardForHats);
+        emit FundsRetrieved(_beneficiary, _token, _bounty, _rewardForHats);
     }
 
     function sendETHReward(address _to, uint256 _rewardPercentage, uint256 _totalReward) internal {
