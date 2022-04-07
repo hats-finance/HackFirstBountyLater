@@ -1,4 +1,4 @@
-# HackedFirstBountyLater
+# HackFirstBountyLater
 
 If a white hat hacker finds a vulnerability in a protocol, they must rely on the project they hacked for a bug bounty.
 

@@ -5,21 +5,20 @@
 // Runtime Environment's members available in the global scope.
 const hre = require("hardhat");
 
-async function main(hats = process.env.HATS, silent = false) {
-  const HackedFirst = await hre.ethers.getContractFactory("HackedFirst");
-  const HackedFirstFactory = await hre.ethers.getContractFactory(
-    "HackedFirstFactory"
+async function main(silent = false) {
+  const HackFirst = await hre.ethers.getContractFactory("HackFirst");
+  const HackFirstFactory = await hre.ethers.getContractFactory(
+    "HackFirstFactory"
   );
-  const hackedFirstImplementation = await HackedFirst.deploy();
+  const hackedFirstImplementation = await HackFirst.deploy();
   await hackedFirstImplementation.deployed();
-  const hackedFirstFactory = await HackedFirstFactory.deploy(
-    hackedFirstImplementation.address,
-    hats
+  const hackedFirstFactory = await HackFirstFactory.deploy(
+    hackedFirstImplementation.address
   );
   await hackedFirstFactory.deployed();
 
   if (!silent) {
-    console.log("HackedFirstFactory deployed to:", hackedFirstFactory.address);
+    console.log("HackFirstFactory deployed to:", hackedFirstFactory.address);
   }
   return { hackedFirstFactory, hackedFirstImplementation };
 }
