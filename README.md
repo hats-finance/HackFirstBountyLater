@@ -14,6 +14,18 @@ This repository contains a simple [contract](./contracts/HackFirst.sol) that imp
 
 With the contracts in this repository we provide a way for the community to "completely normalize and accept" the Hacked First model by offering a concrete contract that can help white hat hackers to negotiate a fair bounty for their work.
 
+## About Hats
+
+Hats.finance is a decentralized bug bounty protocol that allows anyone to add liquidity to a smart bug bounty while earning $HATS. Hackers can responsibly disclose vulnerabilities without KYC & be rewarded with scalable prizes & NFTs for their work.
+
+## Motivation
+
+Our motivation to write the "HackFirstBountyLater" aligns with our vision for a safer and more secure ecosystem. Even though getting 10% of the hacked funds is an arbitrary amount that could be of an enourmouse size, it can reduce the fear of a hacked community from loosing the whole ammount. Hackers motivations are diverse and we believe that "HackFirstBountyLater" might suit a subset of them. Our goal is to keep on developing tools that will serve the community and make our space safer and trustworthy.
+
+## Way forward
+
+We are putting those contracts out in the open as an open suggestion for how this proccess should be implemented. We encourage you participation in suggesting other ways and in opening pull requests to ofer how to better the implementation.
+
 ## How it works
 
 - a **Hacker** deposits funds obtained from the hack (ETH and/or tokens) to an escrow contract called `HackFirst`.
