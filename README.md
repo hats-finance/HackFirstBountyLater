@@ -20,11 +20,11 @@ Hats.finance is a decentralized bug bounty protocol that allows anyone to add li
 
 ## Motivation
 
-Our motivation to write the "HackFirstBountyLater" aligns with our vision for a safer and more secure ecosystem. Even though getting 10% of the hacked funds is an arbitrary amount that could be of an enourmouse size, it can reduce the fear of a hacked community from loosing the whole ammount. Hackers motivations are diverse and we believe that "HackFirstBountyLater" might suit a subset of them. Our goal is to keep on developing tools that will serve the community and make our space safer and trustworthy.
+Our motivation to write the "HackFirstBountyLater" aligns with our vision for a safer and more secure ecosystem. Even though getting 10% of the hacked funds is an arbitrary amount that could be of an enormous size, it can reduce the fear of a hacked community from losing the whole ammount. Hackers motivations are diverse and we believe that "HackFirstBountyLater" might suit a subset of them. Our goal is to keep on developing tools that will serve the community and make our space safer and trustworthy.
 
 ## Way forward
 
-We are putting those contracts out in the open as an open suggestion for how this proccess should be implemented. We encourage you participation in suggesting other ways and in opening pull requests to ofer how to better the implementation.
+We are putting those contracts out in the open as an suggestion for how this proccess should be implemented. We encourage you participation in suggesting other ways and in opening pull requests to improve the process and its implementation.
 
 ## How it works
 
