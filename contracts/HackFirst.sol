@@ -72,15 +72,15 @@ contract HackFirst is OwnableUpgradeable, ReentrancyGuardUpgradeable {
      */
     function retrieveFunds(
         address _beneficiary,
-        uint256 _bounty,
+        uint256 _bountyPercentage,
         address _token
     ) external onlyOwner nonReentrant {
-        require(_bounty >= MINIMUM_BOUNTY, "Bounty must be at least 10%");
-        require(_bounty <= HUNDRED_PERCENT, "Bounty can be at most 100%");
+        require(_bountyPercentage >= MINIMUM_BOUNTY, "Bounty percentage must be at least 10%");
+        require(_bountyPercentage <= HUNDRED_PERCENT, "Bounty percentage can be at most 100%");
+        uint256 bounty = _bounty * totalFunds / HUNDRED_PERCENT;
         if (_token == address(0)) {
             uint256 totalFunds = address(this).balance;
             require(totalFunds > 0, "No ETH in the contract");
-            uint256 bounty = _bounty * totalFunds / HUNDRED_PERCENT;
             sendETHReward(hacker, bounty);
 
             if (bounty < totalFunds) {
@@ -91,7 +91,6 @@ contract HackFirst is OwnableUpgradeable, ReentrancyGuardUpgradeable {
             // tranfer all _token held by this contract to the different parties
             uint256 totalFunds = IERC20Upgradeable(_token).balanceOf(address(this));
             require(totalFunds > 0, "No tokens in the contract");
-            uint256 bounty = _bounty * totalFunds / HUNDRED_PERCENT;
             IERC20Upgradeable(_token).safeTransfer(hacker, bounty);
 
             if (bounty < totalFunds) {
@@ -99,7 +98,7 @@ contract HackFirst is OwnableUpgradeable, ReentrancyGuardUpgradeable {
                 IERC20Upgradeable(_token).safeTransfer(_beneficiary, totalFunds - bounty);
             }
         }
-        emit FundsRetrieved(_beneficiary, _token, _bounty);
+        emit FundsRetrieved(_beneficiary, _token, _bountyPercentage);
     }
 
     function sendETHReward(address _to, uint256 _amount) internal {
