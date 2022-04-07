@@ -67,7 +67,7 @@ contract HackFirst is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     /**
      * @dev Retrieve funds from the contract. This transfers the entire _token balance of the contract, dividing the balance between the hacker and the beneificiary
      * @param _beneficiary - the address that will receive all of the funds, minus the bounty
-     * @param _bounty - the percentage of the funds that will be sent to the hacker, expressed as a value between 0 and 10000. The minimum value is 10% (i.e. 1000)
+     * @param _bountyPercentage - the percentage of the funds that will be sent to the hacker, expressed as a value between 0 and 10000. The minimum value is 10% (i.e. 1000)
      * @param _token - the address of the token to transfer. If set to address(0), ETH will be transfered. 
      */
     function retrieveFunds(
