@@ -50,7 +50,7 @@ describe("HackFirstFactory", function () {
     ).to.be.revertedWith("Initializable: contract is already initialized");
   });
 
-  it("Change committee", async function () {
+  it("Change ownership", async function () {
     const hacker = this.accounts[1];
     const committee = this.accounts[2];
     const newCommittee = this.accounts[4];
@@ -92,6 +92,16 @@ describe("HackFirstFactory", function () {
     await expect(
       instance.connect(hacker).transferOwnership(committee.address)
     ).to.be.revertedWith("Ownable: caller is not the owner");
+
+    // the ownership is now of the committee, who can transfer ownership to the newCommittee
+    tx = await (
+      await instance.connect(committee).transferOwnership(newCommittee.address)
+    ).wait();
+    tx = await (await instance.connect(newCommittee).acceptOwnership()).wait();
+    expect(tx)
+      .to.emit("OwnershipTransferred")
+      .withArgs(committee.address, newCommittee.address);
+    expect(await instance.owner()).to.equal(newCommittee.address);
   });
 
   it("Renounce ownership", async function () {
