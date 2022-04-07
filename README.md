@@ -10,7 +10,7 @@ Somewhat provocatively, in https://twitter.com/DegenSpartan/status/1509023079078
 
 > .. we should completely normalize and accept "hack first - bounty later" with 10% of amount as the minimum bounty ...
 
-This repository contains a simple [contract](./contracts/HackFirst.sol) that implements such an _ad hoc_ bounty program. It implements the "Hack First, Bounty Later" idea in a naief but straightforward way.
+This repository contains a simple [contract](./contracts/HackFirst.sol) that implements such an _ad hoc_ bounty program. It implements the "Hack First, Bounty Later" idea in a naive but straightforward way.
 
 With the contracts in this repository we provide a way for the community to "completely normalize and accept" the Hacked First model by offering a concrete contract that can help white hat hackers to negotiate a fair bounty for their work.
 
@@ -35,7 +35,7 @@ We are putting those contracts out in the open as an suggestion for how this pro
 
 ## Which functions to call
 
-1. The hacker (or any other address) calls `HackFirstFactory.createHackerFirstContract(address _hacker, address _owner)`. This will create a new `HackFirst` instance.
+1. The hacker (or anyone who knows the address of the hacker) calls `HackFirstFactory.createHackerFirstContract(address _hacker, address _owner)` to create a new `HackFirst` contract instance.
    he owner of the new instance is the `_hacker`.
 2. The `_owner` address calls `HackFirst.acceptOwnership()` and becomes the owner of the contract
 3. The hacker sends the hacked funds (tokens and /or ether) to the contract
