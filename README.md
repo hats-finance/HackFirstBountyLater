@@ -20,11 +20,11 @@ Hats.finance is a decentralized bug bounty protocol that allows anyone to add li
 
 ## Motivation
 
-Our motivation to write the "HackFirstBountyLater" aligns with our vision for a safer and more secure ecosystem. Even though getting 10% of the hacked funds is an arbitrary amount that could be of an enormous size, it can reduce the fear of a hacked community from losing the whole ammount. Hackers motivations are diverse and we believe that "HackFirstBountyLater" might suit a subset of them. Our goal is to keep on developing tools that will serve the community and make our space safer and trustworthy.
+Our motivation to write the "HackFirstBountyLater" aligns with our vision for a safer and more secure ecosystem. Even though getting 10% of the hacked funds is an arbitrary amount that could be of an enormous size, it can reduce the fear of a hacked community from losing the whole ammount. Hackers' motivations are diverse and we believe that "HackFirstBountyLater" might suit a subset of them. Our goal is to keep on developing tools that will serve the community and make our space safer and trustworthy.
 
 ## Way forward
 
-We are putting those contracts out in the open as an suggestion for how this process should be implemented. We encourage your participation in suggesting other ways and in opening pull requests to improve the process and its implementation.
+We are putting those contracts out in the open as a suggestion for how this process should be implemented. We encourage your participation in suggesting other ways and in opening pull requests to improve the process and its implementation.
 
 ## How it works
 
@@ -35,8 +35,7 @@ We are putting those contracts out in the open as an suggestion for how this pro
 
 ## Which functions to call
 
-1. The hacker (or anyone who knows the address of the hacker) calls `HackFirstFactory.createHackerFirstContract(address _hacker, address _owner)` to create a new `HackFirst` contract instance.
-   he owner of the new instance is the `_hacker`.
+1. The hacker (or anyone who knows the address of the hacker) calls `HackFirstFactory.createHackerFirstContract(address _hacker, address _owner)` to create a new `HackFirst` contract instance. The owner of the new instance is the `_hacker`.
 2. The `_owner` address calls `HackFirst.acceptOwnership()` and becomes the owner of the contract
-3. The hacker sends the hacked funds (tokens and /or ether) to the contract
-4. The owner calls `HackFirst.retrieveFunds(address _beneficiary,uint256 _bounty,address _token)` for each token that is in the contract. This transfers a percentage of the tokens to the hacker (the amount is given by `_bounty`) - this must be at least 10%. The rest of the funds are sent to the `_beneficiary` address (typically the victims of the hack)
+3. The hacker sends the hacked funds (tokens and/or ether) to the contract
+4. The owner calls `HackFirst.retrieveFunds(address _beneficiary,uint256 _bounty,address _token)` for each token that is in the contract. This transfers a percentage of the tokens to the hacker (the percentage is given by `_bounty`) - this must be at least 10%. The rest of the funds are sent to the `_beneficiary` address (typically the victims of the hack)
