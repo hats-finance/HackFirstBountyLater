@@ -184,9 +184,7 @@ describe("HackFirstFactory", function () {
           10001,
           "0x0000000000000000000000000000000000000000"
         )
-    ).to.be.revertedWith(
-      "panic code 0x11 (Arithmetic operation underflowed or overflowed outside of an unchecked block)"
-    );
+    ).to.be.revertedWith("Bounty can be at most 100%");
 
     await expect(
       instance
@@ -364,9 +362,7 @@ describe("HackFirstFactory", function () {
       instance
         .connect(committee)
         .retrieveFunds(beneficiary.address, 11000, token.address)
-    ).to.be.revertedWith(
-      "panic code 0x11 (Arithmetic operation underflowed or overflowed outside of an unchecked block)"
-    );
+    ).to.be.revertedWith("Bounty can be at most 100%");
 
     await expect(
       instance
