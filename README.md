@@ -24,7 +24,7 @@ Our motivation to write the "HackFirstBountyLater" aligns with our vision for a 
 
 ## Way forward
 
-We are putting those contracts out in the open as an suggestion for how this process should be implemented. We encourage you participation in suggesting other ways and in opening pull requests to improve the process and its implementation.
+We are putting those contracts out in the open as an suggestion for how this process should be implemented. We encourage your participation in suggesting other ways and in opening pull requests to improve the process and its implementation.
 
 ## How it works
 
