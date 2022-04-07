@@ -77,7 +77,7 @@ contract HackFirst is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     ) external onlyOwner nonReentrant {
         require(_bountyPercentage >= MINIMUM_BOUNTY, "Bounty percentage must be at least 10%");
         require(_bountyPercentage <= HUNDRED_PERCENT, "Bounty percentage can be at most 100%");
-        uint256 bounty = _bounty * totalFunds / HUNDRED_PERCENT;
+        uint256 bounty = _bountyPercentage * totalFunds / HUNDRED_PERCENT;
         if (_token == address(0)) {
             uint256 totalFunds = address(this).balance;
             require(totalFunds > 0, "No ETH in the contract");
